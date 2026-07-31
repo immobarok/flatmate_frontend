@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -8,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ChevronLeft, Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -23,7 +23,6 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>
 
 export default function LoginPage() {
-  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   const {
@@ -35,18 +34,25 @@ export default function LoginPage() {
   })
 
   const onSubmit = async (data: LoginFormValues) => {
-    setError(null)
-    const payload = {
+    const toastId = toast.loading("Signing you in...")
+
+    const response = await loginAction({
       ...data,
       cfTurnstileToken: "dummy-token-for-dev",
-    }
-
-    const response = await loginAction(payload)
+    })
 
     if (!response.success) {
-      setError(response.error)
+      toast.error(response.error || "Login failed. Please try again.", {
+        id: toastId,
+        description: "Check your credentials and try again.",
+      })
     } else {
-      window.location.href = "/"
+      toast.success("Welcome back!", {
+        id: toastId,
+        description: `Logged in as ${response.data.user.email}`,
+      })
+      // Short delay so user sees success toast before navigating
+      setTimeout(() => router.push("/dashboard"), 800)
     }
   }
 
@@ -62,19 +68,12 @@ export default function LoginPage() {
           priority
           className="object-cover opacity-60 mix-blend-overlay transition-transform duration-1000 hover:scale-105"
         />
-
         <div className="relative z-10">
-          <Link
-            href="/"
-            className="inline-block text-3xl font-black tracking-tighter"
-          >
+          <Link href="/" className="inline-block text-3xl font-black tracking-tighter">
             <span className="text-white">FLAT</span>
-            <span className="text-primary drop-shadow-[0_0_8px_rgba(249,115,22,0.3)]">
-              MATE
-            </span>
+            <span className="text-primary drop-shadow-[0_0_8px_rgba(249,115,22,0.3)]">MATE</span>
           </Link>
         </div>
-
         <div className="relative z-10 mb-8 max-w-lg">
           <h2 className="mb-4 text-4xl font-extrabold text-white leading-tight">
             Welcome back to your mess dashboard.
@@ -88,7 +87,6 @@ export default function LoginPage() {
 
       {/* Right Column: Form Area */}
       <div className="relative flex w-full flex-col items-center justify-center p-6 overflow-hidden lg:w-1/2">
-        {/* Background ambient glow matching Titanium & Blaze */}
         <div className="pointer-events-none absolute -left-1/4 top-1/4 -z-10 h-72 w-72 rounded-full bg-primary/10 blur-[100px] mix-blend-screen lg:hidden" />
         <div className="pointer-events-none absolute -right-1/4 bottom-1/4 -z-10 h-96 w-96 rounded-full bg-primary/10 blur-[120px] mix-blend-screen lg:hidden" />
 
@@ -102,15 +100,12 @@ export default function LoginPage() {
           <ChevronLeft className="h-6 w-6" />
         </Button>
 
-        {/* Form Card using Shadcn UI */}
         <Card className="w-full max-w-md rounded-[2rem] border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-3xl backdrop-saturate-150 sm:p-10 dark:bg-stone-900/40">
           {/* Mobile Logo */}
           <div className="mb-8 flex justify-center lg:hidden">
             <Link href="/" className="text-2xl font-black tracking-tighter">
               <span className="text-foreground">FLAT</span>
-              <span className="text-primary drop-shadow-[0_0_8px_rgba(249,115,22,0.3)]">
-                MATE
-              </span>
+              <span className="text-primary drop-shadow-[0_0_8px_rgba(249,115,22,0.3)]">MATE</span>
             </Link>
           </div>
 
@@ -118,18 +113,12 @@ export default function LoginPage() {
             <CardTitle className="text-3xl font-extrabold tracking-tight text-foreground">
               Log In
             </CardTitle>
-            <CardDescription className="text-muted-foreground text-sm">
+            <CardDescription className="text-muted-foreground text-sm mt-1">
               Enter your email and password to continue.
             </CardDescription>
           </CardHeader>
 
           <CardContent className="p-0">
-            {error && (
-              <div className="mb-6 rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-sm font-medium text-destructive">
-                {error}
-              </div>
-            )}
-
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
@@ -140,12 +129,10 @@ export default function LoginPage() {
                   type="email"
                   placeholder="flatmate@example.com"
                   {...register("email")}
-                  className="h-12 rounded-2xl border-white/10 bg-white/5 px-5 py-4 text-foreground placeholder:text-muted-foreground/50 focus-visible:border-primary focus-visible:ring-primary/50 dark:bg-black/20"
+                  className="h-12 rounded-2xl border-white/10 bg-white/5 px-5 text-foreground placeholder:text-muted-foreground/50 focus-visible:border-primary focus-visible:ring-primary/50 dark:bg-black/20"
                 />
                 {errors.email && (
-                  <p className="ml-1 mt-1 text-xs font-medium text-destructive">
-                    {errors.email.message}
-                  </p>
+                  <p className="text-xs text-destructive mt-1">{errors.email.message}</p>
                 )}
               </div>
 
@@ -154,10 +141,7 @@ export default function LoginPage() {
                   <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                     Password
                   </Label>
-                  <Link
-                    href="#"
-                    className="text-xs font-medium text-primary hover:underline"
-                  >
+                  <Link href="#" className="text-xs font-medium text-primary hover:underline">
                     Forgot password?
                   </Link>
                 </div>
@@ -166,12 +150,10 @@ export default function LoginPage() {
                   type="password"
                   placeholder="••••••••"
                   {...register("password")}
-                  className="h-12 rounded-2xl border-white/10 bg-white/5 px-5 py-4 text-foreground placeholder:text-muted-foreground/50 focus-visible:border-primary focus-visible:ring-primary/50 dark:bg-black/20"
+                  className="h-12 rounded-2xl border-white/10 bg-white/5 px-5 text-foreground placeholder:text-muted-foreground/50 focus-visible:border-primary focus-visible:ring-primary/50 dark:bg-black/20"
                 />
                 {errors.password && (
-                  <p className="ml-1 mt-1 text-xs font-medium text-destructive">
-                    {errors.password.message}
-                  </p>
+                  <p className="text-xs text-destructive mt-1">{errors.password.message}</p>
                 )}
               </div>
 
@@ -180,21 +162,14 @@ export default function LoginPage() {
                 disabled={isSubmitting}
                 className="mt-6 h-14 w-full rounded-2xl bg-primary text-lg font-bold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-orange-500 hover:drop-shadow-[0_0_15px_rgba(249,115,22,0.6)] active:scale-95"
               >
-                {isSubmitting ? (
-                  <Loader2 className="h-6 w-6 animate-spin" />
-                ) : (
-                  "Sign In"
-                )}
+                {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : "Sign In"}
               </Button>
             </form>
           </CardContent>
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
             Don't have an account?{" "}
-            <Link
-              href="/register"
-              className="font-bold text-primary transition-colors hover:underline"
-            >
+            <Link href="/register" className="font-bold text-primary transition-colors hover:underline">
               Create one here
             </Link>
           </p>

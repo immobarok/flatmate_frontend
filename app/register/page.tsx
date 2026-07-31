@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -8,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ChevronLeft, Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -24,8 +24,6 @@ const registerSchema = z.object({
 type RegisterFormValues = z.infer<typeof registerSchema>
 
 export default function RegisterPage() {
-  const [serverError, setServerError] = useState<string | null>(null)
-  const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const router = useRouter()
 
   const {
@@ -37,29 +35,34 @@ export default function RegisterPage() {
   })
 
   const onSubmit = async (data: RegisterFormValues) => {
-    setServerError(null)
-    const payload = {
+    const toastId = toast.loading("Creating your account...")
+
+    const response = await registerAction({
       ...data,
       cfTurnstileToken: "dummy-token-for-dev",
-    }
-    const response = await registerAction(payload)
+    })
+
     if (!response.success) {
-      setServerError(response.error)
+      toast.error(response.error || "Registration failed. Please try again.", {
+        id: toastId,
+        description: "Please check your details and try again.",
+      })
     } else {
-      setSuccessMessage("Account created! Please log in to continue.")
+      toast.success("Account created successfully!", {
+        id: toastId,
+        description: "Please log in to continue.",
+      })
+      setTimeout(() => router.push("/login"), 1000)
     }
   }
 
   return (
     <main className="flex min-h-dvh w-full bg-background selection:bg-primary/30">
-
       {/* Left Column: Form Area */}
       <div className="relative order-2 flex w-full flex-col items-center justify-center p-6 overflow-hidden lg:order-1 lg:w-1/2">
-        {/* Background ambient glow */}
         <div className="pointer-events-none absolute -right-1/4 top-1/4 -z-10 h-72 w-72 rounded-full bg-primary/10 blur-[100px] mix-blend-screen lg:hidden" />
         <div className="pointer-events-none absolute -left-1/4 bottom-1/4 -z-10 h-96 w-96 rounded-full bg-primary/10 blur-[120px] mix-blend-screen lg:hidden" />
 
-        {/* Mobile Back Button */}
         <Button
           variant="outline"
           size="icon"
@@ -69,9 +72,7 @@ export default function RegisterPage() {
           <ChevronLeft className="h-6 w-6" />
         </Button>
 
-        {/* Form Card */}
         <Card className="w-full max-w-md rounded-[2rem] border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-3xl backdrop-saturate-150 sm:p-10 dark:bg-stone-900/40">
-          {/* Mobile Logo */}
           <div className="mb-8 flex justify-center lg:hidden">
             <Link href="/" className="text-2xl font-black tracking-tighter">
               <span className="text-foreground">FLAT</span>
@@ -89,74 +90,57 @@ export default function RegisterPage() {
           </CardHeader>
 
           <CardContent className="p-0">
-            {successMessage ? (
-              <div className="rounded-xl border border-primary/30 bg-primary/10 p-5 text-sm font-medium text-primary">
-                <p>{successMessage}</p>
-                <Link href="/login" className="mt-3 inline-block font-bold underline">
-                  Go to Login →
-                </Link>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Full Name
+                </Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="John Doe"
+                  {...register("name")}
+                  className="h-12 rounded-2xl border-white/10 bg-white/5 px-5 text-foreground placeholder:text-muted-foreground/50 focus-visible:border-primary focus-visible:ring-primary/50 dark:bg-black/20"
+                />
+                {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}
               </div>
-            ) : (
-              <>
-                {serverError && (
-                  <div className="mb-6 rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-sm font-medium text-destructive">
-                    {serverError}
-                  </div>
-                )}
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                  <div className="space-y-2">
-                    <Label htmlFor="name" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                      Full Name
-                    </Label>
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder="John Doe"
-                      {...register("name")}
-                      className="h-12 rounded-2xl border-white/10 bg-white/5 px-5 text-foreground placeholder:text-muted-foreground/50 focus-visible:border-primary focus-visible:ring-primary/50 dark:bg-black/20"
-                    />
-                    {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}
-                  </div>
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Email Address
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="flatmate@example.com"
+                  {...register("email")}
+                  className="h-12 rounded-2xl border-white/10 bg-white/5 px-5 text-foreground placeholder:text-muted-foreground/50 focus-visible:border-primary focus-visible:ring-primary/50 dark:bg-black/20"
+                />
+                {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
+              </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                      Email Address
-                    </Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="flatmate@example.com"
-                      {...register("email")}
-                      className="h-12 rounded-2xl border-white/10 bg-white/5 px-5 text-foreground placeholder:text-muted-foreground/50 focus-visible:border-primary focus-visible:ring-primary/50 dark:bg-black/20"
-                    />
-                    {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
-                  </div>
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Password
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  {...register("password")}
+                  className="h-12 rounded-2xl border-white/10 bg-white/5 px-5 text-foreground placeholder:text-muted-foreground/50 focus-visible:border-primary focus-visible:ring-primary/50 dark:bg-black/20"
+                />
+                {errors.password && <p className="text-xs text-destructive mt-1">{errors.password.message}</p>}
+              </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                      Password
-                    </Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="••••••••"
-                      {...register("password")}
-                      className="h-12 rounded-2xl border-white/10 bg-white/5 px-5 text-foreground placeholder:text-muted-foreground/50 focus-visible:border-primary focus-visible:ring-primary/50 dark:bg-black/20"
-                    />
-                    {errors.password && <p className="text-xs text-destructive mt-1">{errors.password.message}</p>}
-                  </div>
-
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="mt-6 h-14 w-full rounded-2xl bg-primary text-lg font-bold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-orange-500 hover:drop-shadow-[0_0_15px_rgba(249,115,22,0.6)] active:scale-95"
-                  >
-                    {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : "Sign Up"}
-                  </Button>
-                </form>
-              </>
-            )}
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="mt-6 h-14 w-full rounded-2xl bg-primary text-lg font-bold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-orange-500 hover:drop-shadow-[0_0_15px_rgba(249,115,22,0.6)] active:scale-95"
+              >
+                {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : "Sign Up"}
+              </Button>
+            </form>
           </CardContent>
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
