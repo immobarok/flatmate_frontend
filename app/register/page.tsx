@@ -154,7 +154,6 @@ export default function RegisterPage() {
           alt="Flatmates hanging out"
           className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay transition-transform duration-1000 hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
         
         <div className="relative z-10 w-full flex justify-end">
           <Link href="/" className="inline-block text-3xl font-black tracking-tighter">

@@ -8,6 +8,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 
 const loginSchema = z.object({
@@ -48,12 +49,11 @@ export default function LoginPage() {
   return (
     <main className="flex min-h-dvh w-full bg-background selection:bg-primary/30">
       <div className="relative hidden h-screen w-1/2 flex-col justify-between overflow-hidden border-r border-border/50 bg-stone-900 p-12 lg:flex">
-        <img
-          src="https://images.unsplash.com/photo-1543353080-c1143f29b461?q=80&w=1200&auto=format&fit=crop"
+        <Image
+          src="https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=1200&auto=format&fit=crop"
           alt="Flatmates eating together"
           className="absolute inset-0 h-full w-full object-cover opacity-60 mix-blend-overlay transition-transform duration-1000 hover:scale-105"
         />
-        <div className="absolute inset-0 bg-linear-to-t from-background via-background/40 to-transparent" />
 
         <div className="relative z-10">
           <Link
