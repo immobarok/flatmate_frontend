@@ -11,8 +11,8 @@ const fontMono = Geist_Mono({
   variable: "--font-mono",
 })
 
-import { BottomNav } from "@/components/layout/BottomNav";
-import { Navbar } from "@/components/layout/Navbar";
+import { BottomNav } from "@/components/layout/BottomNav"
+import { Navbar } from "@/components/layout/Navbar"
 
 export default function RootLayout({
   children,
@@ -30,7 +30,7 @@ export default function RootLayout({
         inter.variable
       )}
     >
-      <body>
+      <body suppressHydrationWarning>
         <ThemeProvider>
           <Navbar />
           {children}

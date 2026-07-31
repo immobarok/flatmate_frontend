@@ -52,7 +52,10 @@ export default function LoginPage() {
         <Image
           src="https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=1200&auto=format&fit=crop"
           alt="Flatmates eating together"
-          className="absolute inset-0 h-full w-full object-cover opacity-60 mix-blend-overlay transition-transform duration-1000 hover:scale-105"
+          fill
+          sizes="50vw"
+          priority
+          className="object-cover opacity-60 mix-blend-overlay transition-transform duration-1000 hover:scale-105"
         />
 
         <div className="relative z-10">

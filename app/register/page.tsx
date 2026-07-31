@@ -47,7 +47,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="flex min-h-[100dvh] w-full bg-background selection:bg-primary/30">
+    <main className="flex min-h-dvh w-full bg-background selection:bg-primary/30">
       
       {/* Right Column: Form Area (Moved to the left visually via flex-row-reverse or just swap elements) */}
       <div className="relative flex flex-col items-center justify-center w-full lg:w-1/2 p-6 overflow-hidden order-2 lg:order-1">
