@@ -3,6 +3,14 @@
 export interface LoginRequest {
   email: string;
   password: string;
+  cfTurnstileToken: string;
+}
+
+export interface RegisterRequest {
+  name: string;
+  email: string;
+  password: string;
+  cfTurnstileToken: string;
 }
 
 export interface UserResponse {

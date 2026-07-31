@@ -34,8 +34,20 @@ const SCREENS = [
 ];
 
 export function OnboardingFlow() {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = sessionStorage.getItem('onboardingStep');
+      return saved !== null ? parseInt(saved, 10) : 0;
+    }
+    return 0;
+  });
+  
   const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Sync to session storage
+  useEffect(() => {
+    sessionStorage.setItem('onboardingStep', currentStep.toString());
+  }, [currentStep]);
 
   // Auto-advance logic
   useEffect(() => {
