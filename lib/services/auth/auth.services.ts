@@ -1,5 +1,5 @@
 import { fetchApi } from '../core/apiClient';
-import type { LoginRequest, RegisterRequest, AuthResponse, UserResponse } from './auth.types';
+import type { LoginRequest, RegisterRequest, AuthResponse, RegisterResponse, UserResponse } from './auth.types';
 
 export const authServices = {
   login: async (credentials: LoginRequest): Promise<AuthResponse> => {
@@ -9,15 +9,22 @@ export const authServices = {
     });
   },
 
-  register: async (data: RegisterRequest): Promise<AuthResponse> => {
-    return fetchApi<AuthResponse>('/auth/register', {
+  register: async (data: RegisterRequest): Promise<RegisterResponse> => {
+    return fetchApi<RegisterResponse>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   },
 
+  refresh: async (refreshToken: string): Promise<AuthResponse> => {
+    return fetchApi<AuthResponse>('/auth/refresh', {
+      method: 'POST',
+      body: JSON.stringify({ refreshToken }),
+    });
+  },
+
   getProfile: async (): Promise<UserResponse> => {
-    return fetchApi<UserResponse>('/auth/profile', {
+    return fetchApi<UserResponse>('/users/me', {
       method: 'GET',
     });
   },

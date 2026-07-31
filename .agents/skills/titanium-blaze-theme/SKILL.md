@@ -55,6 +55,13 @@ When styling components, building new UI sections, or making design choices in t
    - For light mode: `bg-white/70 dark:bg-stone-900/60 backdrop-blur-2xl backdrop-saturate-150` gives a highly premium Apple-like glass effect.
    - Ensure borders on glass elements are ultra-thin and subtle (e.g., `border border-white/20 dark:border-white/10`) to separate the glass from the background without feeling heavy.
 
+## Component Usage & Shadcn UI
+
+1. **Use Shadcn UI Components First**
+   - Whenever building UI elements (buttons, inputs, cards, dialogs, dropdowns, forms, labels, etc.), ALWAYS use or extend Shadcn UI components (`@/components/ui/*`) instead of raw native HTML elements.
+   - Install missing Shadcn components using `npx shadcn@latest add <component>`.
+   - Customize Shadcn components using the "Titanium & Blaze" palette CSS variables and Tailwind classes.
+
 ## Implementation Rules
 - Prefer using the defined CSS variables (`bg-background`, `text-primary`, `border-border`) configured in `globals.css` as they handle dark/light mode switching automatically.
 - For the specialized **Glass Panels** and **Neon Ember** hover effects, use explicit Tailwind utilities since they involve opacity, blur, and drop-shadows which are highly context-dependent.
