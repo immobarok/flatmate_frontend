@@ -1,26 +1,31 @@
-"use client";
+"use client"
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { registerAction } from '@/lib/services/auth/auth.actions';
-import { ChevronLeft, Loader2 } from 'lucide-react';
+import { useState } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { ChevronLeft, Loader2 } from "lucide-react"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
 
-import { useRouter } from 'next/navigation';
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { registerAction } from "@/lib/services/auth/auth.actions"
 
 const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().min(1, "Email is required").email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-});
+})
 
-type RegisterFormValues = z.infer<typeof registerSchema>;
+type RegisterFormValues = z.infer<typeof registerSchema>
 
 export default function RegisterPage() {
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
 
   const {
     register,
@@ -28,150 +33,185 @@ export default function RegisterPage() {
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
-  });
+  })
 
   const onSubmit = async (data: RegisterFormValues) => {
-    setError(null);
+    setError(null)
     const payload = {
       ...data,
-      cfTurnstileToken: 'dummy-token-for-dev',
-    };
-
-    const response = await registerAction(payload);
-    
-    if (!response.success) {
-      setError(response.error);
-    } else {
-      window.location.href = '/';
+      cfTurnstileToken: "dummy-token-for-dev",
     }
-  };
+
+    const response = await registerAction(payload)
+
+    if (!response.success) {
+      setError(response.error)
+    } else {
+      window.location.href = "/"
+    }
+  }
 
   return (
     <main className="flex min-h-dvh w-full bg-background selection:bg-primary/30">
-      
-      {/* Right Column: Form Area (Moved to the left visually via flex-row-reverse or just swap elements) */}
-      <div className="relative flex flex-col items-center justify-center w-full lg:w-1/2 p-6 overflow-hidden order-2 lg:order-1">
+      {/* Right Column: Form Area */}
+      <div className="relative order-2 flex w-full flex-col items-center justify-center p-6 overflow-hidden lg:order-1 lg:w-1/2">
         {/* Background ambient glow */}
-        <div className="absolute top-1/4 -right-1/4 w-72 h-72 bg-primary/10 rounded-full blur-[100px] -z-10 mix-blend-screen pointer-events-none lg:hidden" />
-        <div className="absolute bottom-1/4 -left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px] -z-10 mix-blend-screen pointer-events-none lg:hidden" />
+        <div className="pointer-events-none absolute -right-1/4 top-1/4 -z-10 h-72 w-72 rounded-full bg-primary/10 blur-[100px] mix-blend-screen lg:hidden" />
+        <div className="pointer-events-none absolute -left-1/4 bottom-1/4 -z-10 h-96 w-96 rounded-full bg-primary/10 blur-[120px] mix-blend-screen lg:hidden" />
 
         {/* Mobile Back Button */}
-        <button
+        <Button
+          variant="outline"
+          size="icon"
           onClick={() => router.back()}
-          className="absolute top-6 left-6 p-2 rounded-full bg-white/5 dark:bg-stone-900/50 backdrop-blur-md border border-border/50 text-muted-foreground hover:text-foreground transition-colors z-50 lg:hidden"
+          className="absolute left-6 top-6 z-50 rounded-full border-border/50 bg-white/5 backdrop-blur-md dark:bg-stone-900/50 lg:hidden"
         >
-          <ChevronLeft className="w-6 h-6" />
-        </button>
+          <ChevronLeft className="h-6 w-6" />
+        </Button>
 
-        {/* Form Card */}
-        <div className="w-full max-w-md p-8 sm:p-10 rounded-[2rem] bg-white/5 dark:bg-stone-900/40 backdrop-blur-3xl backdrop-saturate-150 border border-white/10 shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700">
-          
+        {/* Form Card using Shadcn UI */}
+        <Card className="w-full max-w-md rounded-[2rem] border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-3xl backdrop-saturate-150 sm:p-10 dark:bg-stone-900/40">
           {/* Mobile Logo */}
-          <div className="flex justify-center mb-10 lg:hidden">
+          <div className="mb-8 flex justify-center lg:hidden">
             <Link href="/" className="text-2xl font-black tracking-tighter">
               <span className="text-foreground">FLAT</span>
-              <span className="text-primary drop-shadow-[0_0_8px_rgba(249,115,22,0.3)]">MATE</span>
+              <span className="text-primary drop-shadow-[0_0_8px_rgba(249,115,22,0.3)]">
+                MATE
+              </span>
             </Link>
           </div>
 
-          <div className="mb-8">
-            <h1 className="text-3xl font-extrabold tracking-tight text-foreground mb-2">
+          <CardHeader className="p-0 mb-6">
+            <CardTitle className="text-3xl font-extrabold tracking-tight text-foreground">
               Create Account
-            </h1>
-            <p className="text-muted-foreground">
+            </CardTitle>
+            <CardDescription className="text-muted-foreground text-sm">
               Set up your profile to join your flatmates.
-            </p>
-          </div>
+            </CardDescription>
+          </CardHeader>
 
-          {error && (
-            <div className="mb-6 p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium animate-in fade-in zoom-in-95">
-              {error}
-            </div>
-          )}
+          <CardContent className="p-0">
+            {error && (
+              <div className="mb-6 rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-sm font-medium text-destructive">
+                {error}
+              </div>
+            )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <div className="space-y-2 relative group">
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1 group-focus-within:text-primary transition-colors">Full Name</label>
-              <input
-                {...register('name')}
-                type="text"
-                placeholder="John Doe"
-                className="w-full px-5 py-4 rounded-2xl bg-white/5 dark:bg-black/20 border border-white/10 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all shadow-inner"
-              />
-              {errors.name && (
-                <p className="text-xs text-destructive ml-1 mt-1 font-medium">{errors.name.message}</p>
-              )}
-            </div>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Full Name
+                </Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="John Doe"
+                  {...register("name")}
+                  className="h-12 rounded-2xl border-white/10 bg-white/5 px-5 py-4 text-foreground placeholder:text-muted-foreground/50 focus-visible:border-primary focus-visible:ring-primary/50 dark:bg-black/20"
+                />
+                {errors.name && (
+                  <p className="ml-1 mt-1 text-xs font-medium text-destructive">
+                    {errors.name.message}
+                  </p>
+                )}
+              </div>
 
-            <div className="space-y-2 relative group">
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1 group-focus-within:text-primary transition-colors">Email Address</label>
-              <input
-                {...register('email')}
-                type="email"
-                placeholder="flatmate@example.com"
-                className="w-full px-5 py-4 rounded-2xl bg-white/5 dark:bg-black/20 border border-white/10 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all shadow-inner"
-              />
-              {errors.email && (
-                <p className="text-xs text-destructive ml-1 mt-1 font-medium">{errors.email.message}</p>
-              )}
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Email Address
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="flatmate@example.com"
+                  {...register("email")}
+                  className="h-12 rounded-2xl border-white/10 bg-white/5 px-5 py-4 text-foreground placeholder:text-muted-foreground/50 focus-visible:border-primary focus-visible:ring-primary/50 dark:bg-black/20"
+                />
+                {errors.email && (
+                  <p className="ml-1 mt-1 text-xs font-medium text-destructive">
+                    {errors.email.message}
+                  </p>
+                )}
+              </div>
 
-            <div className="space-y-2 relative group">
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1 group-focus-within:text-primary transition-colors">Password</label>
-              <input
-                {...register('password')}
-                type="password"
-                placeholder="••••••••"
-                className="w-full px-5 py-4 rounded-2xl bg-white/5 dark:bg-black/20 border border-white/10 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all shadow-inner"
-              />
-              {errors.password && (
-                <p className="text-xs text-destructive ml-1 mt-1 font-medium">{errors.password.message}</p>
-              )}
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Password
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  {...register("password")}
+                  className="h-12 rounded-2xl border-white/10 bg-white/5 px-5 py-4 text-foreground placeholder:text-muted-foreground/50 focus-visible:border-primary focus-visible:ring-primary/50 dark:bg-black/20"
+                />
+                {errors.password && (
+                  <p className="ml-1 mt-1 text-xs font-medium text-destructive">
+                    {errors.password.message}
+                  </p>
+                )}
+              </div>
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full py-4 mt-6 bg-primary text-white font-bold rounded-2xl shadow-lg transition-all duration-300 hover:scale-[1.02] hover:drop-shadow-[0_0_15px_rgba(249,115,22,0.6)] hover:bg-orange-500 active:scale-95 disabled:opacity-70 disabled:pointer-events-none flex items-center justify-center text-lg"
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="mt-6 h-14 w-full rounded-2xl bg-primary text-lg font-bold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-orange-500 hover:drop-shadow-[0_0_15px_rgba(249,115,22,0.6)] active:scale-95"
+              >
+                {isSubmitting ? (
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                ) : (
+                  "Sign Up"
+                )}
+              </Button>
+            </form>
+          </CardContent>
+
+          <p className="mt-8 text-center text-sm text-muted-foreground">
+            Already have an account?{" "}
+            <Link
+              href="/login"
+              className="font-bold text-primary transition-colors hover:underline"
             >
-              {isSubmitting ? <Loader2 className="w-6 h-6 animate-spin" /> : "Sign Up"}
-            </button>
-          </form>
-
-          <p className="text-center text-sm text-muted-foreground mt-10">
-            Already have an account?{' '}
-            <Link href="/login" className="text-primary font-bold hover:underline transition-colors">
               Log in instead
             </Link>
           </p>
-        </div>
+        </Card>
       </div>
 
       {/* Left Column (Appears on right side visually due to order): Image Area (Hidden on mobile) */}
-      <div className="hidden lg:flex relative w-1/2 h-screen flex-col items-end justify-between p-12 overflow-hidden bg-stone-900 border-l border-border/50 order-1 lg:order-2 text-right">
-        <img 
-          src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop" 
+      <div className="relative hidden h-screen w-1/2 flex-col items-end justify-between overflow-hidden border-l border-border/50 bg-stone-900 p-12 text-right lg:order-2 lg:flex">
+        <Image
+          src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop"
           alt="Flatmates hanging out"
-          className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay transition-transform duration-1000 hover:scale-105"
+          fill
+          sizes="50vw"
+          priority
+          className="object-cover opacity-60 mix-blend-overlay transition-transform duration-1000 hover:scale-105"
         />
-        
-        <div className="relative z-10 w-full flex justify-end">
-          <Link href="/" className="inline-block text-3xl font-black tracking-tighter">
+
+        <div className="relative z-10 flex w-full justify-end">
+          <Link
+            href="/"
+            className="inline-block text-3xl font-black tracking-tighter"
+          >
             <span className="text-white">FLAT</span>
-            <span className="text-primary drop-shadow-[0_0_8px_rgba(249,115,22,0.3)]">MATE</span>
+            <span className="text-primary drop-shadow-[0_0_8px_rgba(249,115,22,0.3)]">
+              MATE
+            </span>
           </Link>
         </div>
 
-        <div className="relative z-10 max-w-lg mb-8">
-          <h2 className="text-4xl font-extrabold text-white mb-4 leading-tight">
-            Shared living, <br/>made simple.
+        <div className="relative z-10 mb-8 max-w-lg">
+          <h2 className="mb-4 text-4xl font-extrabold text-white leading-tight">
+            Shared living, <br />
+            made simple.
           </h2>
-          <p className="text-lg text-stone-300 font-medium">
-            Join thousands of flatmates who have already eliminated mess disputes and streamlined their daily groceries.
+          <p className="text-lg font-medium text-stone-300">
+            Join thousands of flatmates who have already eliminated mess disputes
+            and streamlined their daily groceries.
           </p>
         </div>
       </div>
-
     </main>
-  );
+  )
 }
