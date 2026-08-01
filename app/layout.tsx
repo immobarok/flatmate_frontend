@@ -11,7 +11,6 @@ const fontMono = Geist_Mono({
   variable: "--font-mono",
 })
 
-import { BottomNav } from "@/components/layout/BottomNav"
 import { Navbar } from "@/components/layout/Navbar"
 import { Toaster } from "@/components/ui/sonner"
 
@@ -35,7 +34,6 @@ export default function RootLayout({
         <ThemeProvider>
           <Navbar />
           {children}
-          <BottomNav />
           <Toaster />
         </ThemeProvider>
       </body>

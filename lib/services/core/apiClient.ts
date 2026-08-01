@@ -36,15 +36,24 @@ export async function fetchApi<T>(
 
   // TODO: Intercept and attach auth tokens if needed from cookies or localStorage
 
-  const config: RequestInit = {
-    ...options,
-    headers,
-  };
-
   try {
+    console.log(`[API Client] Fetching ${url}`);
+    
+    // 10 second timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    
+    const config: RequestInit = {
+      ...options,
+      headers,
+      signal: controller.signal,
+    };
+
     const response = await fetch(url, config);
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
+      console.error(`[API Client] Error response from ${url}: ${response.status}`);
       const errorData = await response.json().catch(() => ({}));
       throw new ApiException(
         errorData.message || response.statusText || 'An error occurred',
@@ -58,8 +67,11 @@ export async function fetchApi<T>(
       return {} as T;
     }
 
-    return await response.json();
+    const jsonResponse = await response.json();
+    console.log(`[API Client] Success response from ${url}`);
+    return jsonResponse;
   } catch (error) {
+    console.error(`[API Client] Exception during fetch to ${url}:`, error);
     if (error instanceof ApiException) {
       throw error;
     }

@@ -12,6 +12,7 @@ export async function withServerAction<T>(
     return { data, error: null, success: true }
   } catch (error) {
     if (error instanceof ApiException) {
+      console.error(`[Server Action API Exception] ${error.statusCode}:`, error.message, error.details);
       return {
         data: null,
         error: error.message,
@@ -19,6 +20,7 @@ export async function withServerAction<T>(
         details: error.details,
       }
     }
+    console.error("[Server Action Unexpected Error]:", error);
     return {
       data: null,
       error: "An unexpected error occurred on the server",

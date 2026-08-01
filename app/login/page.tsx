@@ -36,23 +36,31 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormValues) => {
     const toastId = toast.loading("Signing you in...")
 
-    const response = await loginAction({
-      ...data,
-      cfTurnstileToken: "dummy-token-for-dev",
-    })
+    try {
+      const response = await loginAction({
+        ...data,
+        cfTurnstileToken: "dummy-token-for-dev",
+      })
 
-    if (!response.success) {
-      toast.error(response.error || "Login failed. Please try again.", {
+      if (!response.success) {
+        toast.error(response.error || "Login failed. Please try again.", {
+          id: toastId,
+          description: "Check your credentials and try again.",
+        })
+      } else {
+        toast.success("Welcome back!", {
+          id: toastId,
+          description: `Logged in as ${response.data.user.email}`,
+        })
+        // Short delay so user sees success toast before navigating
+        setTimeout(() => router.push("/overview"), 800)
+      }
+    } catch (error: any) {
+      console.error("Login unexpected error:", error);
+      toast.error("An unexpected error occurred.", {
         id: toastId,
-        description: "Check your credentials and try again.",
+        description: error.message || "Please check the console for details.",
       })
-    } else {
-      toast.success("Welcome back!", {
-        id: toastId,
-        description: `Logged in as ${response.data.user.email}`,
-      })
-      // Short delay so user sees success toast before navigating
-      setTimeout(() => router.push("/dashboard"), 800)
     }
   }
 

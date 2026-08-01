@@ -3,17 +3,19 @@ import type { LoginRequest, RegisterRequest, AuthResponse, RegisterResponse, Use
 
 export const authServices = {
   login: async (credentials: LoginRequest): Promise<AuthResponse> => {
-    return fetchApi<AuthResponse>('/auth/login', {
+    const response = await fetchApi<any>('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
+    return response.data || response;
   },
 
   register: async (data: RegisterRequest): Promise<RegisterResponse> => {
-    return fetchApi<RegisterResponse>('/auth/register', {
+    const response = await fetchApi<any>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(data),
     });
+    return response.data || response;
   },
 
   refresh: async (refreshToken: string): Promise<AuthResponse> => {

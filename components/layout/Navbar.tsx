@@ -7,9 +7,14 @@ import { cn } from '@/lib/utils';
 export function Navbar() {
   const pathname = usePathname();
 
-  // Hide Navbar on onboarding and auth pages
-  const hiddenRoutes = ['/', '/login', '/register'];
-  if (hiddenRoutes.includes(pathname)) {
+  // Hide Navbar on auth, onboarding, and all dashboard pages
+  // Dashboard pages have their own TopHeader + AppSidebar
+  const hiddenPrefixes = [
+    '/', '/login', '/register', '/onboarding',
+    '/overview', '/meals', '/bazaar', '/profile',
+    '/settings', '/admin', '/notices',
+  ];
+  if (hiddenPrefixes.some((p) => p === '/' ? pathname === '/' : pathname.startsWith(p))) {
     return null;
   }
 
