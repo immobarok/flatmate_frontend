@@ -19,6 +19,7 @@ const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().min(1, "Email is required").email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
+  messCode: z.string().min(4, "Mess Code is required to join a mess"),
 })
 
 type RegisterFormValues = z.infer<typeof registerSchema>
@@ -131,6 +132,20 @@ export default function RegisterPage() {
                   className="h-12 rounded-2xl border-white/10 bg-white/5 px-5 text-foreground placeholder:text-muted-foreground/50 focus-visible:border-primary focus-visible:ring-primary/50 dark:bg-black/20"
                 />
                 {errors.password && <p className="text-xs text-destructive mt-1">{errors.password.message}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="messCode" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Mess Code
+                </Label>
+                <Input
+                  id="messCode"
+                  type="text"
+                  placeholder="e.g. FLTM-2026"
+                  {...register("messCode")}
+                  className="h-12 rounded-2xl border-white/10 bg-white/5 px-5 text-foreground placeholder:text-muted-foreground/50 focus-visible:border-primary focus-visible:ring-primary/50 dark:bg-black/20"
+                />
+                {errors.messCode && <p className="text-xs text-destructive mt-1">{errors.messCode.message}</p>}
               </div>
 
               <Button

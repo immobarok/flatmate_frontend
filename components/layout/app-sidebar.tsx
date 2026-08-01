@@ -38,6 +38,16 @@ const steps = [
     icon: Wallet,
   },
   {
+    title: "Menu & Notices",
+    url: "/menus-notices",
+    icon: Utensils,
+  },
+  {
+    title: "Directory",
+    url: "/directory",
+    icon: User,
+  },
+  {
     title: "Settings",
     url: "/settings",
     icon: Settings,

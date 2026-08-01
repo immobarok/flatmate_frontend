@@ -165,7 +165,7 @@ export function BottomNav({ role = "MEMBER" }: { role?: string }) {
 
       {/* Bottom Tab Bar */}
       <nav className="fixed inset-x-0 bottom-0 z-50 md:hidden">
-        <div className="flex h-[4.5rem] items-center justify-around border-t border-white/40 bg-white/20 px-2 shadow-[0_-4px_30px_rgba(0,0,0,0.1)] backdrop-blur-3xl backdrop-saturate-200 dark:border-white/20 dark:bg-black/20">
+        <div className="flex h-18 items-center justify-around border-t border-white/40 bg-white/20 px-2 shadow-[0_-4px_30px_rgba(0,0,0,0.1)] backdrop-blur-3xl backdrop-saturate-200 dark:border-white/20 dark:bg-black/20">
           {/* Left: Home + Meals */}
           {navItems.slice(0, 2).map((item) => {
             const isActive =

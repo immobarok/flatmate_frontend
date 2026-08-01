@@ -11,7 +11,7 @@ export function Navbar() {
   // Dashboard pages have their own TopHeader + AppSidebar
   const hiddenPrefixes = [
     '/', '/login', '/register', '/onboarding',
-    '/overview', '/meals', '/bazaar', '/profile',
+    '/overview', '/meals', '/bazaars', '/deposits', '/profile',
     '/settings', '/admin', '/notices',
   ];
   if (hiddenPrefixes.some((p) => p === '/' ? pathname === '/' : pathname.startsWith(p))) {
