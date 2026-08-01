@@ -75,6 +75,11 @@ const adminSteps = [
     url: "/admin/finance",
     icon: Wallet,
   },
+  {
+    title: "Menu Planner",
+    url: "/admin/menu-plan",
+    icon: Utensils,
+  },
 ]
 
 export function AppSidebar({ role = 'MEMBER' }: { role?: string }) {
